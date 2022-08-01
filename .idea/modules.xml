@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/dbtest.iml" filepath="$PROJECT_DIR$/.idea/dbtest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/QueryRefineTool.iml" filepath="$PROJECT_DIR$/.idea/QueryRefineTool.iml" />
     </modules>
   </component>
 </project>

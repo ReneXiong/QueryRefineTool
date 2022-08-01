@@ -2,7 +2,7 @@
 QueryRefineTool
 
 ## Synopsis
-QueryRefineTool [DBAddress] [DBPort] [DBName] [Table]
+QueryRefineTool [DBAddress] [DBPort] [Username] [Password] [DBName]
 
 ## Summary
 QueryRefineTool is a python based tool for PostgreSQL query relaxation and contraction.
@@ -11,13 +11,13 @@ QueryRefineTool will provide range suggestions for tuples in the given desired r
 ## Description
 An example way to start the refine process: 
 ```commandline
-> QueryRefineTool 127.0.0.1 5432 testDB testTable
+> QueryRefineTool 127.0.0.1 5432 admin 123456 testBankDB
 ```
 
-If the address is not reachable, or DBName or Table doesn't exist, QueryRefineTool will quit with a message of failed reason.
+If the address is not reachable, QueryRefineTool will quit with a message of failed reason.
  
 ```commandline
-"testTable123" does not exist in this database. 
+"someRandomAddress:5432" is not reachable. 
 ```
 
 After successful connection, 
