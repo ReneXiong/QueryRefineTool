@@ -1,4 +1,5 @@
 import psycopg2
+import sql_list
 
 
 class DBObj:
@@ -43,14 +44,65 @@ class DBObj:
     def get_cursor(self):
         return self.cor
 
-    def get_all_table_names(self):
+    def get_all_schema_names(self):
+        sql = sql_list.get_all_schema_sql()
+        self.get_cursor().execute(sql)
 
-        self.get_cursor().execute("""SELECT * FROM pg_catalog.pg_tables
-        WHERE schemaname = 'public';""")
         result = self.get_cursor().fetchall()
         if (result is None) or (len(result) == 0):
-            raise Exception("No table found, or db error occurred")
+            raise Exception(
+                sql_list.get_exception_information("Empty result", sql)
+            )
+
         all_names = []
         for row in result:
-            all_names += [row[1]]
+            all_names += row
         return all_names
+
+    def get_all_table_names(self, schema_name):
+        sql = sql_list.get_all_table_sql(schema_name)
+        self.get_cursor().execute(sql)
+
+        result = self.get_cursor().fetchall()
+        if (result is None) or (len(result) == 0):
+            raise Exception(
+                sql_list.get_exception_information("Empty result", sql)
+            )
+
+        all_names = []
+
+        for row in result:
+            all_names += row
+        return all_names
+
+    def get_all_int_attributes(self, schema_name, table_name):
+        sql = sql_list.get_all_int_attribute_sql(schema_name, table_name)
+        self.get_cursor().execute(sql)
+
+        result = self.get_cursor().fetchall()
+        if (result is None) or (len(result) == 0):
+            raise Exception(
+                sql_list.get_exception_information("Empty result", sql)
+            )
+
+        all_names = []
+        for row in result:
+            all_names += row
+        return all_names
+
+    """ SAVED IN CASE """
+    # def get_lists(self, sql):
+    #     self.get_cursor().execute(sql)
+    #     result = self.get_cursor().fetchall()
+    #     if (result is None) or (len(result) == 0):
+    #         raise Exception("No result found, or db error occurred. SQL executed: " + sql)
+    #     all_names = []
+    #     for row in result:
+    #         all_names += [row[1]]
+    #     return all_names
+
+
+# Code
+# anything to setup
+# readme: how to setup and use
+# What I learnt:
