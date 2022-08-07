@@ -34,14 +34,14 @@ def pre_setting(db):
 
         print(f"The schema you have chosen is {schema}.\n"
               "It contains these tables, please input the index you want to select")
-        all_table_names = db.get_all_table_names(schema)
+        all_table_names = db.get_all_table_names()
         table = all_table_names[ask_user_choice(all_table_names)]
 
         print(f"The table you have chosen is {schema}.{table}.\n"
               "It contains these int attributes, please input the index you want to select")
         print("You need select at least two, divided by comma. Example:")
         print("1,3,5,6")
-        all_attributes_names = db.get_all_int_attributes(schema, table)
+        all_attributes_names = db.get_all_int_attributes()
         user_input_attributes = ask_user_attributes(all_attributes_names)
         attributes = []
         attributes_selected_string = ""

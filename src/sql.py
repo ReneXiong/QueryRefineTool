@@ -4,6 +4,7 @@ import sql_list
 
 class DBObj:
     TIMEOUT = 60
+
     def __init__(self, addr, port, username, password, dbname):
         self.addr = addr
         self.port = port
@@ -12,6 +13,9 @@ class DBObj:
         self.dbname = dbname
         self.conn = None
         self.cor = None
+        self.schema = None
+        self.table = None
+        self.attribute = []
 
     def connect(self):
         print("connecting to %s:%s, username: %s, password: %s, dbname = %s" %
@@ -69,13 +73,30 @@ class DBObj:
                 sql_list.get_exception_information("Empty result", sql)
             )
 
-        all_names = []
+        self.schema = schema_name
 
+        all_names = []
         for row in result:
             all_names += row
         return all_names
 
-    def get_all_int_attributes(self, schema_name, table_name):
+    def get_all_int_attributes(self, table_name):
+        sql = sql_list.get_all_int_attribute_sql(self.schema, table_name)
+        self.get_cursor().execute(sql)
+
+        result = self.get_cursor().fetchall()
+        if (result is None) or (len(result) == 0):
+            raise Exception(
+                sql_list.get_exception_information("Empty result", sql)
+            )
+
+        self.table = table_name
+        all_names = []
+        for row in result:
+            all_names += row
+        return all_names
+
+    def get_attribute_range(self, schema_name, table_name):
         sql = sql_list.get_all_int_attribute_sql(schema_name, table_name)
         self.get_cursor().execute(sql)
 
@@ -100,9 +121,3 @@ class DBObj:
     #     for row in result:
     #         all_names += [row[1]]
     #     return all_names
-
-
-# Code
-# anything to setup
-# readme: how to setup and use
-# What I learnt:

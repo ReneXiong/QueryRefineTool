@@ -16,6 +16,13 @@ def get_all_int_attribute_sql(schema, table):
         WHERE table_schema = '{schema}'
         AND table_name   = '{table}'"""
 
+def get_all_int_attribute_sql(schema, table):
+    return f"""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = '{schema}'
+        AND table_name   = '{table}'"""
+
 
 def get_exception_information(e, sql):
     return f"{e} \nwhen executing \n{sql}"
