@@ -48,6 +48,9 @@ class DBObj:
     def get_cursor(self):
         return self.cor
 
+    def get_attribute(self):
+        return self.attribute
+
     def get_all_schema_names(self):
         sql = sql_list.get_all_schema_sql()
         self.get_cursor().execute(sql)
@@ -58,10 +61,7 @@ class DBObj:
                 sql_list.get_exception_information("Empty result", sql)
             )
 
-        all_names = []
-        for row in result:
-            all_names += row
-        return all_names
+        return result
 
     def get_all_table_names(self, schema_name):
         sql = sql_list.get_all_table_sql(schema_name)
@@ -91,13 +91,11 @@ class DBObj:
             )
 
         self.table = table_name
-        all_names = []
-        for row in result:
-            all_names += row
-        return all_names
 
-    def get_attribute_range(self, schema_name, table_name):
-        sql = sql_list.get_all_int_attribute_sql(schema_name, table_name)
+        return result
+
+    def get_attribute_range(self, attribute_name):
+        sql = sql_list.get_attribute_range_sql(self.schema, self.table, attribute_name)
         self.get_cursor().execute(sql)
 
         result = self.get_cursor().fetchall()

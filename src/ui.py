@@ -17,6 +17,9 @@ def ui(argv):
         db.connect()
         pre_setting_value = pre_setting(db)
 
+        while True:
+            query_refine(db)
+
     except Exception as e:
         print("Error caught: %s" % e)
     finally:
@@ -48,11 +51,15 @@ def pre_setting(db):
         for i in user_input_attributes:
             attributes += [all_attributes_names[i]]
             attributes_selected_string.join(f"{i}.{all_attributes_names[i]} ")
-        print("Attributes you have chosen is " + attributes)
+        print("Attributes you have chosen is " + ", ".join(attributes))
     except Exception as e:
         raise Exception(e)
 
     return {"schema": schema, "table": table, "attributes": attributes}
+
+
+def query_refine(db):
+    print("Current range ")
 
 
 def check_length_argv(argv):
