@@ -22,5 +22,18 @@ def get_attribute_range_sql(schema, table, attribute):
     return ""
 
 
+# TODO
+def get_current_estimate_sql(schema, table, attribute_range):
+    query_string = f"""
+        SELECT COUNT(*) 
+        FROM {schema}."{table}"
+        WHERE TRUE"""
+    for attr in attribute_range:
+        query_string += f"""
+            AND {attr} >= {attribute_range[attr][0]}
+            AND {attr} <= {attribute_range[attr][1]}"""
+    return query_string
+
+
 def get_exception_information(e, sql):
     return f"{e} \nwhen executing \n{sql}"

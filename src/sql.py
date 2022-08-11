@@ -16,6 +16,7 @@ class DBObj:
         self.schema = None
         self.table = None
         self.attribute = []
+        self.attribute_range = {}  # {name, [min, max]}
 
     def connect(self):
         print("connecting to %s:%s, username: %s, password: %s, dbname = %s" %
@@ -43,7 +44,7 @@ class DBObj:
             self.cor = None
             print("close connection")
             return 0
-        return 1
+        return 1  # Closed a connection that is already closed.
 
     def get_cursor(self):
         return self.cor
@@ -101,7 +102,7 @@ class DBObj:
                 all_names.append(row[0])
         return all_names
 
-    def get_current_estimate(self, attribute_name):
+    def get_attribute_possible_range(self, attribute_name):
         sql = sql_list.get_attribute_range_sql(self.schema, self.table, attribute_name)
         self.get_cursor().execute(sql)
 
@@ -113,8 +114,28 @@ class DBObj:
 
         return result
 
+    def get_current_estimate(self):
+        sql = sql_list.get_current_estimate_sql(self.schema, self.table, self.attribute_range)
+        self.get_cursor().execute(sql)
 
+        result = self.get_cursor().fetchall()
+        if (result is None) or (len(result) == 0):
+            raise Exception(
+                sql_list.get_exception_information("Empty result", sql)
+            )
 
+        return result[0][0]
+
+    def set_attributes(self, attributes):
+        self.attribute = attributes
+        for attr in attributes:
+            self.attribute_range[attr] = [0, 0]
+
+    def set_attribute_range(self, attribute_range):
+        self.attribute_range = attribute_range
+
+    def get_attribute_range(self):
+        return self.attribute_range
 
     """ SAVED IN CASE """
     # def get_lists(self, sql):

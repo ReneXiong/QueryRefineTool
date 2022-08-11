@@ -16,7 +16,7 @@ def ui(argv):
     try:
         db.connect()
         pre_setting_value = pre_setting(db)
-
+        print("pre-setting-finished")
         while True:
             query_refine(db)
 
@@ -40,7 +40,7 @@ def pre_setting(db):
         all_table_names = db.get_all_table_names(schema)
         table = all_table_names[ask_user_choice(all_table_names)]
 
-        print(f"The table you have chosen is {schema}.{table}.\n"
+        print(f"The table you have chosen is {schema}.\"{table}\".\n"
               "It contains these int attributes, please input the index you want to select")
         print("You need select at least two, divided by comma. Example:")
         print("1,3,5,6")
@@ -59,12 +59,12 @@ def pre_setting(db):
 
 
 def query_refine(db):
-    # TODO
-    tuple_est = 0
+    tuple_est = db.get_current_estimate()
     print(f"Current range ({tuple_est} est. tuples within this range)")
-    print_attributes_and_range(db)
+    print("    ".join(db.get_attribute_range())) # TODO
+    print("Please select the attribute you want to change")
+    ask_user_choice(db.get_attribute())
     ask_user_new_range()
-
 
 
 def check_length_argv(argv):
@@ -118,3 +118,8 @@ def user_attributes_input_is_validate(choices, choices_len):
         if (choice >= choices_len) or (choice < 0):
             return False
     return True
+
+
+def ask_user_new_range():
+    # TODO
+    pass
