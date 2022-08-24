@@ -11,10 +11,12 @@ def get_all_table_sql(schema):
 
 def get_all_int_attribute_sql(schema, table):
     return f"""
-        SELECT column_name, data_type
+        SELECT column_name
         FROM information_schema.columns
         WHERE table_schema = '{schema}'
-        AND table_name   = '{table}'"""
+        AND table_name   = '{table}'
+        AND (data_type = 'integer' OR data_type = 'double precision');"""
+
 
 
 # TODO

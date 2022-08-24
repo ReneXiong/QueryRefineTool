@@ -1,0 +1,36 @@
+-- You need superuser permission to import files by query.
+-- Modify this username!!
+alter user <username> superuser
+
+-- Table: testschema.movies
+CREATE SCHEMA IF NOT EXISTST testschema;
+
+DROP TABLE IF EXISTS testschema."movies";
+
+CREATE TABLE IF NOT EXISTS testschema."movies"
+(
+    "id" integer NOT NULL UNIQUE,
+    "title" CHARACTER VARYING (50) NOT NULL,
+    "original_language" CHARACTER VARYING (5) NOT NULL,
+    "runtime" CHARACTER VARYING(10) NOT NULL,
+	"revenue" integer NOT NULL,
+	"genre" CHARACTER VARYING(50) NOT NULL,
+	"release_date" integer NOT NULL,
+	"production_country" CHARACTER VARYING(50) NOT NULL,
+	"dir_id" integer NOT NULL,
+	"vote_average" integer NOT NULL,
+	"vote_count" integer NOT NULL,
+	"production_company" CHARACTER VARYING(50) NOT NULL,
+    CONSTRAINT "movies_pkey" PRIMARY KEY ("id")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS testschema."testBankTable"
+    OWNER to test;
+
+COPY testschema."movies"
+--- CHANGE THE PATH HERE!!
+FROM '/path/movies_clean.tsv'
+DELIMITER E'|'
+CSV HEADER;

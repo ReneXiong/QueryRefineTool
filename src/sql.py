@@ -98,8 +98,7 @@ class DBObj:
 
         all_names = []
         for row in result:
-            if row[1] == "integer":
-                all_names.append(row[0])
+            all_names.append(row[0])
         return all_names
 
     def get_attribute_possible_range(self, attribute_name):
