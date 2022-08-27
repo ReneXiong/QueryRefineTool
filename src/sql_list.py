@@ -18,10 +18,17 @@ def get_all_int_attribute_sql(schema, table):
         AND (data_type = 'integer' OR data_type = 'double precision');"""
 
 
-
 # TODO
-def get_attribute_range_sql(schema, table, attribute):
-    return ""
+def get_attribute_range_sql(schema, table, user_set_attribute_ranges, target_attribute):
+    query_string = f"""
+        SELECT MIN({target_attribute}), MAX({target_attribute})
+        FROM {schema}."{table}"
+        WHERE TRUE"""
+    for attr in user_set_attribute_ranges:
+        query_string += f"""
+            AND {attr} > {user_set_attribute_ranges[attr][0]}
+            AND {attr} < {user_set_attribute_ranges[attr][1]}"""
+    return query_string
 
 
 # TODO
@@ -32,8 +39,8 @@ def get_current_estimate_sql(schema, table, attribute_range):
         WHERE TRUE"""
     for attr in attribute_range:
         query_string += f"""
-            AND {attr} >= {attribute_range[attr][0]}
-            AND {attr} <= {attribute_range[attr][1]}"""
+            AND {attr} > {attribute_range[attr][0]}
+            AND {attr} < {attribute_range[attr][1]}"""
     return query_string
 
 

@@ -17,11 +17,12 @@ def ui(argv):
         db.connect()
         pre_setting_value = pre_setting(db)
         print("pre-setting-finished")
-        while True:
-            query_refine(db)
+        query_refine(db, pre_setting_value)
 
     except Exception as e:
-        print("Error caught: %s" % e)
+        #print("Error caught: %s" % e)
+        # CHANGE ME !!!
+        raise e
     finally:
         db.close()
 
@@ -58,13 +59,25 @@ def pre_setting(db):
     return {"schema": schema, "table": table, "attributes": attributes}
 
 
-def query_refine(db):
-    tuple_est = db.get_current_estimate()
-    print(f"Current range ({tuple_est} est. tuples within this range)")
-    print("    ".join(db.get_attribute_range())) # TODO
-    print("Please select the attribute you want to change")
-    ask_user_choice(db.get_attribute())
-    ask_user_new_range()
+def query_refine(db, pre_setting_value):
+    attribute_settings = []
+    for attribute in pre_setting_value["attributes"]:
+        attribute_settings.append({"name":attribute,
+                                   "range": db.get_attribute_possible_range([],attribute), "user_set": False})
+    while True:
+        user_edited_attributes = {}
+        for attribute in attribute_settings:
+            if(attribute["user_set"]):
+                user_edited_attributes[attribute["name"]] = attribute["range"]
+        tuple_est = db.get_current_estimate(user_edited_attributes)
+        print(f"Current range ({tuple_est} est. tuples within this range)")
+        attribute_range_printing(attribute_settings)
+        print("Please select the attribute you want to change")
+        user_choice_of_attribute = ask_user_choice(pre_setting_value["attributes"])
+        new_range = ask_user_new_range(attribute_settings[user_choice_of_attribute]['range'])
+        new_range = (int(new_range[0]), int(new_range[1]))
+        attribute_settings[user_choice_of_attribute]['range'] = new_range
+        attribute_settings[user_choice_of_attribute]['user_set'] = True
 
 
 def check_length_argv(argv):
@@ -120,6 +133,26 @@ def user_attributes_input_is_validate(choices, choices_len):
     return True
 
 
-def ask_user_new_range():
+def ask_user_new_range(range):
     # TODO
-    pass
+    user_input = input("Please input the new range, format: min, max")
+    range_input_is_valid = False
+    while range_input_is_valid:
+        if user_input.split(',')[0] > range[0]:
+            print("Invalid input, max value should be smaller or equal to the original max value")
+        else:
+            if user_input.split(',')[1] >= range[1]:
+                print("Invalid input, min value should be larger or equal to the original min value")
+            else:
+                range_input_is_valid = True
+
+    return user_input.split(',')
+
+def attribute_range_printing(attribute_setting):
+    for attr in attribute_setting:
+        if(attr['user_set']):
+            print(f"{attr['name']}*: {attr['range']}")
+        else:
+            print(f"{attr['name']}: {attr['range']}")
+
+    return
