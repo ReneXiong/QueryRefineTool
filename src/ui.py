@@ -1,10 +1,10 @@
 """
 The CUI
 """
+import copy
 
 from sql import DBObj
-import sql_list
-
+from math import ceil
 
 def ui(argv):
     argv_check_result = check_length_argv(argv)
@@ -20,7 +20,7 @@ def ui(argv):
         query_refine(db, pre_setting_value)
 
     except Exception as e:
-        #print("Error caught: %s" % e)
+        # print("Error caught: %s" % e)
         # CHANGE ME !!!
         raise e
     finally:
@@ -53,25 +53,28 @@ def pre_setting(db):
             attributes += [all_attributes_names[i]]
             attributes_selected_string.join(f"{i}.{all_attributes_names[i]} ")
         print("Attributes you have chosen is " + ", ".join(attributes))
+
+        target = ask_user_target()
     except Exception as e:
         raise Exception(e)
 
-    return {"schema": schema, "table": table, "attributes": attributes}
+    return {"schema": schema, "table": table, "target": target, "attributes": attributes}
 
 
 def query_refine(db, pre_setting_value):
     attribute_settings = []
     for attribute in pre_setting_value["attributes"]:
-        attribute_settings.append({"name":attribute,
-                                   "range": db.get_attribute_possible_range([],attribute), "user_set": False})
+        attribute_settings.append({"name": attribute,
+                                   "range": db.get_attribute_possible_range([], attribute), "user_set": False})
     while True:
-        user_edited_attributes = {}
-        for attribute in attribute_settings:
-            if(attribute["user_set"]):
-                user_edited_attributes[attribute["name"]] = attribute["range"]
-        tuple_est = db.get_current_estimate(user_edited_attributes)
+        tuple_est = get_estimate(db, attribute_settings)
+        print("=========================================")
         print(f"Current range ({tuple_est} est. tuples within this range)")
+        target = pre_setting_value["target"]
+        print(f"Your target: {target}")
         attribute_range_printing(attribute_settings)
+        make_suggestion(db, pre_setting_value["target"], tuple_est, attribute_settings)
+        print("=========================================")
         print("Please select the attribute you want to change")
         user_choice_of_attribute = ask_user_choice(pre_setting_value["attributes"])
         new_range = ask_user_new_range(attribute_settings[user_choice_of_attribute]['range'])
@@ -125,7 +128,7 @@ def ask_user_attributes(all_choices):
 
 
 def user_attributes_input_is_validate(choices, choices_len):
-    if (choices is None) or (len(choices) == 0):
+    if (choices is None) or (type(choices) == int) or (len(choices) == 0):
         return False
     for choice in choices:
         if (choice >= choices_len) or (choice < 0):
@@ -134,25 +137,79 @@ def user_attributes_input_is_validate(choices, choices_len):
 
 
 def ask_user_new_range(range):
-    # TODO
-    user_input = input("Please input the new range, format: min, max")
     range_input_is_valid = False
-    while range_input_is_valid:
-        if user_input.split(',')[0] > range[0]:
-            print("Invalid input, max value should be smaller or equal to the original max value")
-        else:
-            if user_input.split(',')[1] >= range[1]:
-                print("Invalid input, min value should be larger or equal to the original min value")
-            else:
-                range_input_is_valid = True
+    while not range_input_is_valid:
+        user_input = input("Please input the new range, format: min, max\n")
+        if (len(user_input.split(',')) != 2):
+            print("Invalid input, please try again")
+            continue
 
-    return user_input.split(',')
+        min = user_input.split(',')[0].strip()
+        max = user_input.split(',')[1].strip()
+
+        if (not min.isnumeric()) or (not max.isnumeric()):
+            print("Invalid input, please try again")
+        elif (int(min) > range[1]):
+            print("Invalid input, max value should be smaller or equal to the original max value")
+        elif (int(max) < range[0]):
+            print("Invalid input, min value should be larger or equal to the original min value")
+        else:
+            range_input_is_valid = True
+
+    return (min,max)
+
 
 def attribute_range_printing(attribute_setting):
     for attr in attribute_setting:
-        if(attr['user_set']):
+        if (attr['user_set']):
             print(f"{attr['name']}*: {attr['range']}")
         else:
             print(f"{attr['name']}: {attr['range']}")
 
     return
+
+
+def ask_user_target():
+    target = "-"
+    while not target.isnumeric():
+        target = input("Please input the target value: ")
+    return int(target)
+
+
+def make_suggestion(db, target, est, attribute_settings):
+    if target < est:
+        min_variations = est
+        curr_suggestion = {"name": "", "range": (0, 0)}
+        for attr_no in range(len(attribute_settings)):
+            #if not attribute_settings[attr_no]['user_set']:
+                temp_attribute_settings = copy.deepcopy(attribute_settings)
+                attr = temp_attribute_settings[attr_no]
+                original_low = attr['range'][0]
+                low = attr['range'][0]
+                high = attr['range'][1]
+                mid = (low + high) // 2
+                attr["user_set"] = True
+                while low < high - 1:
+                    mid = int((low + high) // 2)
+                    attr['range'] = (original_low, mid)
+                    curr_est = get_estimate(db, temp_attribute_settings)
+                    if curr_est < target:
+                        low = mid
+                    else:
+                        high = mid
+                curr_est = get_estimate(db, temp_attribute_settings)
+                # print(f"Current attribute: {attr['name']}, curr est: {mid} @ {curr_est}. " )
+                if abs(get_estimate(db, temp_attribute_settings) - target) < min_variations:
+                    min_variations = abs(get_estimate(db, temp_attribute_settings) - target)
+                    curr_suggestion = [attr["name"],(attribute_settings[attr_no]["range"][0], mid)]
+        print("Suggestion: Set %s to %s" % (curr_suggestion[0], curr_suggestion[1]))
+    else:
+        print("Your target is equal to the current estimate of result.")
+
+
+def get_estimate(db, attribute_settings):
+    user_edited_attributes = {}
+    for attribute in attribute_settings:
+        if (attribute["user_set"]):
+            user_edited_attributes[attribute["name"]] = attribute["range"]
+    return db.get_current_estimate(user_edited_attributes)

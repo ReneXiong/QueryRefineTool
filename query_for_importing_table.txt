@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS testschema."movies"
     "title" CHARACTER VARYING (50) NOT NULL,
     "original_language" CHARACTER VARYING (5) NOT NULL,
     "runtime" CHARACTER VARYING(10) NOT NULL,
-	"revenue" integer NOT NULL,
+	"revenue" BIGINT NOT NULL,
 	"genre" CHARACTER VARYING(50) NOT NULL,
 	"release_date" integer NOT NULL,
 	"production_country" CHARACTER VARYING(50) NOT NULL,

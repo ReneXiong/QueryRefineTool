@@ -15,7 +15,10 @@ def get_all_int_attribute_sql(schema, table):
         FROM information_schema.columns
         WHERE table_schema = '{schema}'
         AND table_name   = '{table}'
-        AND (data_type = 'integer' OR data_type = 'double precision');"""
+        AND (data_type = 'integer' OR data_type = 'bigint' 
+             OR data_type = 'smallint' OR data_type = 'numeric'
+             OR data_type = 'real' OR data_type = 'double precision'
+			 OR data_type = 'serial' OR data_type = 'bigserial' );"""
 
 
 # TODO
