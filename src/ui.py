@@ -68,10 +68,12 @@ def query_refine(db, pre_setting_value):
                                    "range": db.get_attribute_possible_range([], attribute), "user_set": False})
     while True:
         tuple_est = get_estimate(db, attribute_settings)
+
         print("=========================================")
         print(f"Current range ({tuple_est} est. tuples within this range)")
         target = pre_setting_value["target"]
         print(f"Your target: {target}")
+        attribute_range_update(db, attribute_settings)
         attribute_range_printing(attribute_settings)
         make_suggestion(db, pre_setting_value["target"], tuple_est, attribute_settings)
         print("=========================================")
@@ -158,6 +160,14 @@ def ask_user_new_range(range):
 
     return (min,max)
 
+def attribute_range_update(db, attribute_settings):
+    user_edited_attributes = {}
+    for attribute in attribute_settings:
+        if attribute['user_set']:
+            user_edited_attributes[attribute['name']] = attribute['range']
+    for attribute in attribute_settings:
+        if not attribute['user_set']:
+            attribute['range'] = db.get_attribute_possible_range(user_edited_attributes, attribute['name'])
 
 def attribute_range_printing(attribute_setting):
     for attr in attribute_setting:
