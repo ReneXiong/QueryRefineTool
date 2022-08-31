@@ -1,15 +1,12 @@
 # QueryRefineTool
 A python tool for querying a certain amount of results in a postgresql database, utilizing psycopg2 library.
-___
 ## Setup
 ```
 pip install psycopg2
 ```
-You also need a postgresql database setup (with data) and connectable for queries. 
-___
+You also need a postgresql database setup (with data) and connectable for queries.
 ## How to use
 Please check specification.md
-___
 ## Improvements could be done:
 
   - Making better suggestions with the highest data density
