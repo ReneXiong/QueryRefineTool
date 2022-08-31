@@ -1,8 +1,21 @@
-## To do list
-# anything to setup
-# readme: how to setup and use
-# What I have done
-# What I learnt:
-# What I will improve if i have more time
-# Problems I overcame
-e.g. copy file to postgresql 
+# QueryRefineTool
+A python tool for querying a certain amount of results in a postgresql database, utilizing psycopg2 library.
+___
+## Setup
+```
+pip install psycopg2
+```
+You also need a postgresql database setup (with data) and connectable for queries. 
+___
+## How to use
+Please check specification.md
+___
+## Improvements could be done:
+
+  - Making better suggestions with the highest data density
+    (It is starting from the minimum value of the column now)
+  - Tests and comments
+  - Refactor UI for better efficiency and readability
+  - Probably a webui (with a backend) will be more intuitive
+  - Making suggestions based on user-chosen attributes
+  - Suggesting function rewrite for better performance
