@@ -1,8 +1,6 @@
-# This is the report for CPSC 448 
-***
+# This is the report for CPSC 448
 ### How to setup and use
 Please check readme.md
-___
 ### What I have done
  - Installing and setting up database and user for a postgresql database on MacOS and Linux (Ubuntu)
  - Importing a tsv file into postgresql database with a nonstandard delimiter by querying 
@@ -12,7 +10,6 @@ reusable database class and query list for future upgrades
  - Creating queries for obtaining database information including tables, columns and datatypes
 for user to choose
  - Creating a function to find a range of one column that contains desired amount of tuples
-___
 ### What I learnt:
  - Understanding the schema concept of Postgresql
  - Learning Python and psycopg2 library
@@ -20,7 +17,6 @@ ___
  - Learning the concept of shirking and relaxing in queries for large amount of data.
  - Writing a project proposal, specification and manual page
  - Communicating and collaborating with others
-___
 ### What I will improve if I have more time
   - Making better suggestions with the highest data density
     (It is starting from the minimum value of the column now)
